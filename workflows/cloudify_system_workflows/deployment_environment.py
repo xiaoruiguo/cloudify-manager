@@ -80,12 +80,16 @@ def delete(ctx,
             ctx.send_event('Uninstalling deployment plugins'),
             ctx.execute_task(
                 task_name='cloudify_agent.operations.uninstall_plugins',
-                kwargs={'plugins': plugins_to_uninstall}),
-            ctx.send_event('Stopping deployment policy engine core'),
-            ctx.execute_task('riemann_controller.tasks.delete'),
-            ctx.send_event('Deleting deployment work directory'),
-            ctx.local_task(_delete_deployment_workdir,
-                           kwargs={'deployment_id': ctx.deployment.id}))
+                kwargs={'plugins': plugins_to_uninstall}))
+
+    sequence.add(
+        ctx.send_event('Stopping deployment policy engine core'),
+        ctx.execute_task('riemann_controller.tasks.delete'))
+
+    sequence.add(
+                 ctx.send_event('Deleting deployment work directory'),
+                 ctx.local_task(_delete_deployment_workdir,
+                                kwargs={'deployment_id': ctx.deployment.id}))
 
     for task in graph.tasks_iter():
         _ignore_task_on_fail_and_send_event(task, ctx)
