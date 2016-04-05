@@ -87,9 +87,9 @@ def delete(ctx,
         ctx.execute_task('riemann_controller.tasks.delete'))
 
     sequence.add(
-                 ctx.send_event('Deleting deployment work directory'),
-                 ctx.local_task(_delete_deployment_workdir,
-                                kwargs={'deployment_id': ctx.deployment.id}))
+        ctx.send_event('Deleting deployment work directory'),
+        ctx.local_task(_delete_deployment_workdir,
+                       kwargs={'deployment_id': ctx.deployment.id}))
 
     for task in graph.tasks_iter():
         _ignore_task_on_fail_and_send_event(task, ctx)
